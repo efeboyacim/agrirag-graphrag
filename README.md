@@ -8,9 +8,45 @@ knowledge graph. Definitional questions ("what is integrated pest management?") 
 answered by semantic search over LanceDB. A single LangGraph agent decides which
 path to take, and every LLM call routes through a Portkey gateway.
 
-> **Status: Phase 5 (evaluation).** All five phases are complete: the stack runs
-> in Docker, answers over HTTP, and is measured by a DeepEval suite wired into CI.
-> Evaluation lands next - see the roadmap.
+> **Status: complete.** All five phases are done - the stack runs in Docker,
+> answers over HTTP, and is measured by a DeepEval suite wired into CI.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    C["Swagger UI · curl · eval run"]
+    C -->|"POST /api/v1/ask"| API
+
+    subgraph D["docker compose"]
+      direction TB
+      API["<b>api</b> · FastAPI :8000<br/>LangGraph agent, in-process"]
+      GW["<b>gateway</b> · Portkey OSS :8787<br/>fallback · retry · tracing"]
+      NEO[("<b>neo4j</b> :7687<br/>210 nodes · 532 edges")]
+    end
+
+    LDB[("<b>LanceDB</b><br/>embedded - a directory,<br/>not a service")]
+
+    API -->|"GraphStore Protocol"| NEO
+    API -->|"VectorStore Protocol"| LDB
+    API -->|"every LLM call"| GW
+    GW --> ANT["Anthropic<br/>sonnet &rarr; haiku fallback"]
+    GW --> OLL["Ollama<br/>local, free, no key"]
+```
+
+Two boundaries carry most of the design:
+
+- **The agent imports neither database driver.** It depends on the `GraphStore`
+  and `VectorStore` Protocols, so swapping Neo4j for Neptune is a new adapter
+  file and one line of wiring - no agent code changes.
+- **No LLM client is constructed outside `llm/portkey_client.py`.** A unit test
+  scans the source tree to enforce it, which is what makes "every call routes
+  through Portkey" checkable rather than aspirational.
+
+**Measured, not asserted.** 35 hand-authored goldens: routing accuracy **1.00**,
+graph path recall **1.00**, correct abstention **1.00** - all three deterministic
+and gating every CI run - plus faithfulness **1.00** and contextual recall
+**0.92**. [Full table, including where it scores badly and why &darr;](#evaluation)
 
 ## Stack
 
@@ -175,11 +211,17 @@ design, and [docs/portkey.md](docs/portkey.md) for the gateway wiring.
 
 One LangGraph agent, not several. Six nodes:
 
-```
-START -> route
-  route --conditional fan-out--> [graph_retrieve] | [semantic_retrieve] | both
-  graph_retrieve / semantic_retrieve --> grade
-  grade --> semantic_retrieve (broaden, once) | synthesize | abstain
+```mermaid
+flowchart LR
+    START([START]) --> route
+    route -. "graph" .-> graph_retrieve["graph_retrieve"]
+    route -. "semantic" .-> semantic_retrieve["semantic_retrieve"]
+    route == "both: one superstep" ==> graph_retrieve & semantic_retrieve
+    graph_retrieve --> grade
+    semantic_retrieve --> grade
+    grade -. "thin - broaden once" .-> semantic_retrieve
+    grade -. "sufficient" .-> synthesize --> END([END])
+    grade -. "nothing usable" .-> abstain --> END
 ```
 
 Three things make this a real stateful agent rather than a RAG chain:
