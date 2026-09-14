@@ -1,0 +1,14 @@
+input_id,regulation_id
+inp_chlorpyrifos,reg_eu_2020_18
+inp_chlorpyrifos,reg_eu_396_2005
+inp_chlorpyrifos,reg_tr_ppp
+inp_deltamethrin,reg_eu_396_2005
+inp_deltamethrin,reg_tr_ppp
+inp_lambda_cyhalothrin,reg_eu_396_2005
+inp_lambda_cyhalothrin,reg_tr_ppp
+inp_tebuconazole,reg_eu_396_2005
+inp_tebuconazole,reg_tr_ppp
+inp_azoxystrobin,reg_eu_396_2005
+inp_azoxystrobin,reg_tr_ppp
+inp_spirotetramat,reg_eu_396_2005
+inp_spirotetramat,reg_tr_ppp

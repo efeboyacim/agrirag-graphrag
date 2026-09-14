@@ -1,0 +1,8 @@
+crop_a_id,crop_b_id,benefit
+crop_wheat,crop_chickpea,"The legume fixes nitrogen and breaks the cereal foliar disease cycle."
+crop_wheat,crop_sunflower,"A deep taproot exploits subsoil moisture left after the cereal and hosts no rust."
+crop_wheat,crop_sugarbeet,"Different rooting depth and residue chemistry reduce carryover of cereal pathogens."
+crop_cotton,crop_wheat,"A winter cereal between cotton crops lowers verticillium inoculum build-up."
+crop_maize,crop_chickpea,"Nitrogen credit from the legume cuts the following maize fertiliser requirement."
+crop_barley,crop_chickpea,"Breaking the continuous cereal sequence suppresses sunn pest carryover in stubble."
+crop_sugarbeet,crop_maize,"A non-host cereal season interrupts the cercospora residue cycle."

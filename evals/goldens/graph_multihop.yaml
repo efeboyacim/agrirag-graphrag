@@ -1,0 +1,219 @@
+# Questions whose answers are relationships, not topics.
+#
+# Every expected_output and context line below is derived from data/seed/*.csv.
+# That is the payoff of a hand-authored corpus: the ground truth is known because
+# the same person wrote the data and the question.
+
+- id: maize_konya_organic
+  input: Which organic-approved treatments exist for maize pests in Konya?
+  expected_route: graph
+  hops: 3
+  expected_entity_ids: [crop_maize, reg_konya]
+  expected_output: >-
+    Bacillus thuringiensis and spinosad are the organic-approved options. Bt controls
+    both fall armyworm and European corn borer at 1.0 kg/ha with a 0-day pre-harvest
+    interval; spinosad controls fall armyworm at 0.2 L/ha with a 3-day interval.
+  context:
+    - Maize is susceptible to fall armyworm and European corn borer, both of which are established in the Konya basin in summer.
+    - Bacillus thuringiensis is organic-approved and controls fall armyworm and European corn borer at 1.0 kg/ha with high efficacy and a 0-day pre-harvest interval.
+    - Spinosad is organic-approved and controls fall armyworm at 0.2 L/ha with high efficacy and a 3-day pre-harvest interval.
+    - Cotton bollworm also attacks maize but is not established in the Konya basin.
+
+- id: maize_konya_restricted
+  input: Are any maize pest treatments restricted in the Konya region?
+  expected_route: graph
+  hops: 4
+  expected_entity_ids: [crop_maize, reg_konya]
+  expected_output: >-
+    Yes. Chlorpyrifos-ethyl, deltamethrin and lambda-cyhalothrin are all governed by
+    the Turkish Plant Protection Products Regulation, which is in force in Konya.
+    Chlorpyrifos in particular had its approval withdrawn.
+  context:
+    - Chlorpyrifos-ethyl is used against fall armyworm and is restricted by the Turkish Plant Protection Products Regulation.
+    - The Turkish Plant Protection Products Regulation applies in the Konya basin.
+    - EU instruments such as Regulation (EU) 2020/18 apply to the export-facing regions rather than Konya.
+
+- id: wheat_rotation
+  input: What should I rotate with wheat, and why?
+  expected_route: graph
+  hops: 1
+  expected_entity_ids: [crop_wheat]
+  expected_output: >-
+    Chickpea fixes nitrogen and breaks the cereal foliar disease cycle. Sunflower
+    uses subsoil moisture with a deep taproot and hosts no rust. Sugar beet has a
+    different rooting depth and reduces cereal pathogen carryover. Cotton benefits
+    from a winter cereal between crops because it lowers verticillium inoculum.
+  context:
+    - Wheat rotates with chickpea; the legume fixes nitrogen and breaks the cereal foliar disease cycle.
+    - Wheat rotates with sunflower; a deep taproot exploits subsoil moisture and it hosts no rust.
+    - Wheat rotates with sugar beet; different rooting depth and residue chemistry reduce carryover of cereal pathogens.
+    - Cotton rotates with wheat; a winter cereal between cotton crops lowers verticillium inoculum build-up.
+
+- id: wheat_clay_practices_rust
+  input: Which practices suit wheat on clay soils, and do any also reduce rust pressure?
+  expected_route: graph
+  hops: 3
+  expected_entity_ids: [crop_wheat]
+  expected_output: >-
+    No-till direct seeding and soil solarization are recommended for clay loam.
+    Wheat-specific practices include crop rotation, deficit irrigation, split
+    nitrogen and resistant cultivar selection. Of these, resistant cultivar
+    selection also reduces yellow rust, because cultivars carrying effective Yr
+    genes block or slow pustule development.
+  context:
+    - Wheat is suited to clay loam and loam soils.
+    - No-till direct seeding is recommended for clay loam soils; soil solarization is also recommended for clay loam.
+    - Resistant cultivar selection is recommended for wheat and mitigates yellow rust - cultivars carrying effective Yr resistance genes block or slow pustule development.
+    - Crop rotation, deficit irrigation and split nitrogen application are recommended for wheat.
+
+- id: cotton_pests_cukurova
+  input: What pests affect cotton in the Cukurova plain?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [crop_cotton, reg_cukurova]
+  expected_output: >-
+    Cotton bollworm at flowering, cotton whitefly during vegetative growth, and
+    verticillium wilt at flowering - all three are established in Cukurova during
+    summer.
+  context:
+    - Cotton is susceptible to cotton bollworm at flowering with high severity.
+    - Cotton is susceptible to cotton whitefly during vegetative growth with high severity.
+    - Cotton is susceptible to verticillium wilt at flowering with high severity.
+    - Cotton bollworm, cotton whitefly and verticillium wilt are all established in the Cukurova plain in summer.
+
+- id: hazelnut_soil
+  input: What soil does hazelnut need, and where is it grown?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [crop_hazelnut]
+  expected_output: >-
+    Hazelnut is suited to acidic forest soil within pH 5.0 to 6.5. That soil is
+    highly prevalent in the Eastern Black Sea, which is where the crop is grown.
+  context:
+    - Hazelnut is suited to acidic forest soil within pH 5.0-6.5.
+    - Acidic forest soil has silt loam texture, good drainage and about 4.0 percent organic matter.
+    - Acidic forest soil is highly prevalent in the Eastern Black Sea region.
+    - Hazelnut is grown in the Eastern Black Sea with high suitability and a typical yield of 1.1 t/ha.
+
+- id: olive_fruit_fly_treatments
+  input: What controls the olive fruit fly, and which options are organic?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [pest_olive_fruit_fly]
+  expected_output: >-
+    Spinosad at 1.0 L/ha with high efficacy and a 7-day pre-harvest interval is
+    organic-approved. Deltamethrin at 0.5 L/ha has medium efficacy and a 14-day
+    interval but is not organic-approved.
+  context:
+    - Olive fruit fly is treated by spinosad at 1.0 L/ha with high efficacy and a 7-day pre-harvest interval; spinosad is organic-approved.
+    - Olive fruit fly is treated by deltamethrin at 0.5 L/ha with medium efficacy and a 14-day pre-harvest interval; deltamethrin is not organic-approved.
+
+- id: humid_subtropical_crops
+  input: Which crops are grown in humid subtropical zones?
+  expected_route: graph
+  hops: 3
+  expected_entity_ids: [clim_humid_subtropical]
+  expected_output: >-
+    Hazelnut. It is the crop grown in the Eastern Black Sea, which is the region
+    classified as humid subtropical.
+  context:
+    - The Eastern Black Sea region has a humid subtropical climate with rainfall above 1200 mm.
+    - Hazelnut is grown in the Eastern Black Sea with high suitability.
+
+- id: yellow_rust_control
+  input: How is yellow rust on wheat controlled chemically?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [pest_yellow_rust]
+  expected_output: >-
+    Tebuconazole at 0.75 L/ha and azoxystrobin at 1.0 L/ha both give high efficacy,
+    and both carry a 35-day pre-harvest interval.
+  context:
+    - Yellow rust is treated by tebuconazole at 0.75 L/ha with high efficacy and a 35-day pre-harvest interval.
+    - Yellow rust is treated by azoxystrobin at 1.0 L/ha with high efficacy and a 35-day pre-harvest interval.
+
+- id: verticillium_practices
+  input: Which farming practices reduce verticillium wilt?
+  expected_route: graph
+  hops: 1
+  expected_entity_ids: [pest_verticillium]
+  expected_output: >-
+    Crop rotation, because non-host crops starve the soilborne microsclerotia, and
+    soil solarization, because sustained heating inactivates microsclerotia in the
+    tilled layer before planting.
+  context:
+    - Crop rotation mitigates verticillium wilt - non-host crops starve the soilborne microsclerotia and lower field inoculum over successive seasons.
+    - Soil solarization mitigates verticillium wilt - sustained heating inactivates microsclerotia in the tilled layer before planting.
+
+- id: sugarbeet_cercospora
+  input: What treats cercospora leaf spot on sugar beet?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [crop_sugarbeet]
+  expected_output: >-
+    Azoxystrobin at 0.8 L/ha with high efficacy, and tebuconazole at 0.75 L/ha with
+    medium efficacy. Both carry a 28-day pre-harvest interval.
+  context:
+    - Sugar beet is susceptible to cercospora leaf spot at canopy closure with high severity.
+    - Cercospora leaf spot is treated by azoxystrobin at 0.8 L/ha with high efficacy and a 28-day pre-harvest interval.
+    - Cercospora leaf spot is treated by tebuconazole at 0.75 L/ha with medium efficacy and a 28-day pre-harvest interval.
+
+- id: grape_mildews
+  input: What controls powdery mildew and downy mildew on grapes?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [crop_grape]
+  expected_output: >-
+    Powdery mildew is controlled by wettable sulfur at 3.0 kg/ha, which is
+    organic-approved with a 3-day interval, or tebuconazole. Downy mildew is
+    controlled by copper hydroxide at 2.0 kg/ha, also organic-approved, with a
+    7-day interval.
+  context:
+    - Grape powdery mildew is treated by wettable sulfur at 3.0 kg/ha with high efficacy and a 3-day pre-harvest interval; sulfur is organic-approved.
+    - Grape powdery mildew is treated by tebuconazole at 0.4 L/ha with high efficacy and a 21-day pre-harvest interval.
+    - Grape downy mildew is treated by copper hydroxide at 2.0 kg/ha with high efficacy and a 7-day pre-harvest interval; copper hydroxide is organic-approved.
+
+- id: chickpea_ascochyta
+  input: What affects chickpea, and how is ascochyta blight managed?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [crop_chickpea]
+  expected_output: >-
+    Chickpea is susceptible to ascochyta blight at flowering and to cotton bollworm
+    at podding. Ascochyta is treated with azoxystrobin at 1.0 L/ha, and crop
+    rotation plus resistant cultivars also reduce it.
+  context:
+    - Chickpea is susceptible to ascochyta blight at flowering with high severity.
+    - Chickpea is susceptible to cotton bollworm at podding with medium severity.
+    - Ascochyta blight is treated by azoxystrobin at 1.0 L/ha with high efficacy and a 28-day pre-harvest interval.
+    - Crop rotation mitigates ascochyta blight - a three-year break from chickpea allows infected stubble to decompose.
+
+- id: whitefly_options
+  input: What are the options against cotton whitefly, and which is organic?
+  expected_route: graph
+  hops: 2
+  expected_entity_ids: [pest_whitefly]
+  expected_output: >-
+    Neem extract at 3.0 L/ha is organic-approved with medium efficacy and a 3-day
+    interval. Spirotetramat at 0.5 L/ha has high efficacy but is not
+    organic-approved and carries a 21-day interval.
+  context:
+    - Cotton whitefly is treated by neem extract at 3.0 L/ha with medium efficacy and a 3-day pre-harvest interval; neem is organic-approved.
+    - Cotton whitefly is treated by spirotetramat at 0.5 L/ha with high efficacy and a 21-day pre-harvest interval; spirotetramat is not organic-approved.
+
+- id: konya_crops
+  input: Which crops are grown in the Konya basin and at what yields?
+  expected_route: graph
+  hops: 1
+  expected_entity_ids: [reg_konya]
+  expected_output: >-
+    Wheat at about 2.8 t/ha, barley at 2.5, sugar beet at 65, chickpea at 1.3, all
+    with high suitability, plus maize at 7.0 and sunflower at 2.2 with medium
+    suitability.
+  context:
+    - Wheat is grown in the Konya basin with high suitability and a typical yield of 2.8 t/ha.
+    - Barley is grown in the Konya basin with high suitability and a typical yield of 2.5 t/ha.
+    - Sugar beet is grown in the Konya basin with high suitability and a typical yield of 65.0 t/ha.
+    - Chickpea is grown in the Konya basin with high suitability and a typical yield of 1.3 t/ha.
+    - Maize is grown in the Konya basin with medium suitability and a typical yield of 7.0 t/ha.
+    - Sunflower is grown in the Konya basin with medium suitability and a typical yield of 2.2 t/ha.

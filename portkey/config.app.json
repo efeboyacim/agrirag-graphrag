@@ -1,0 +1,19 @@
+{
+  "strategy": {
+    "mode": "fallback",
+    "on_status_codes": [429, 500, 502, 503, 529]
+  },
+  "targets": [
+    {
+      "provider": "anthropic",
+      "override_params": { "model": "claude-sonnet-5" },
+      "retry": { "attempts": 3, "on_status_codes": [429, 500, 502, 503, 529] }
+    },
+    {
+      "provider": "anthropic",
+      "override_params": { "model": "claude-haiku-4-5-20251001" },
+      "retry": { "attempts": 2, "on_status_codes": [429, 500, 502, 503, 529] }
+    }
+  ],
+  "cache": { "mode": "simple", "max_age": 3600 }
+}

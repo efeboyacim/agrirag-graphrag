@@ -1,0 +1,132 @@
+# Questions that need a fact AND the reason behind it. The graph supplies the
+# relationship, the corpus supplies the mechanism.
+#
+# `expected_route` is checked leniently for these: `both` is ideal, but a question
+# whose facts happen to be stated in prose can be answered well by `semantic`
+# alone. See RoutingAccuracy in evals/metrics.py.
+
+- id: cover_cropping_sandy_semiarid
+  input: Why is cover cropping recommended for sandy soils in semi-arid regions?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 1
+  expected_entity_ids: []
+  expected_output: >-
+    Cover cropping is recommended for sandy loam because living roots hold aggregates
+    and a rough surface slows runoff, which on light soils is the difference between
+    topsoil staying put and moving with the first heavy rain. In semi-arid regions
+    there is a real cost: the cover uses stored soil water the next cash crop would
+    have had, so it must be terminated early where annual rainfall is near 300 mm.
+  context:
+    - Cover cropping is recommended for sandy loam soils with strong evidence.
+    - Living roots hold aggregates together and keep the surface rough enough to slow runoff; on light sandy soils this keeps topsoil from moving with heavy rain.
+    - In semi-arid regions a cover crop uses stored soil water that the following cash crop would otherwise have.
+    - Where annual rainfall is near 300 mm the water cost can outweigh the soil benefit and the cover must be terminated early.
+
+- id: no_till_konya_why
+  input: Why is no-till recommended on the calcareous soils of the Konya basin?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 2
+  expected_entity_ids: [reg_konya]
+  expected_output: >-
+    No-till is recommended for calcareous soils with strong evidence. An undisturbed,
+    residue-covered surface loses far less water to evaporation than a ploughed one,
+    which matters where the crop lives on moisture stored over winter under about
+    320 mm of rainfall. The residue also protects against wind erosion, the dominant
+    degradation process on these exposed, low-organic-matter plains.
+  context:
+    - No-till direct seeding is recommended for calcareous soils with strong evidence.
+    - Calcareous soil is highly prevalent in the Konya basin, which receives about 320 mm of rainfall a year.
+    - An undisturbed, residue-covered surface loses far less water to evaporation than a freshly ploughed one.
+    - The residue cover protects against wind erosion, which is the dominant degradation process on the exposed calcareous plains of Central Anatolia.
+
+- id: pheromone_trapping_olive_why
+  input: Why does mass trapping work so well against the olive fruit fly specifically?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 1
+  expected_entity_ids: [pest_olive_fruit_fly]
+  expected_output: >-
+    Mass trapping removes adult females before oviposition, holding infestation under
+    the treatment threshold. It suits this pest because it has essentially a single
+    dominant host, immigration is limited where whole blocks are covered, and the
+    female mates once. The failure mode is partial coverage - a trapped block
+    surrounded by untreated groves receives continuous immigration.
+  context:
+    - Pheromone mass trapping mitigates olive fruit fly - mass trapping removes adult females before oviposition, holding infestation under the treatment threshold.
+    - Mass trapping works best against a pest with a single dominant host, limited immigration from outside the block, and a female that mates once.
+    - The olive fruit fly meets all three conditions.
+    - The failure mode is partial coverage; a trapped block surrounded by untreated groves receives continuous immigration.
+
+- id: rotation_verticillium_slow
+  input: Why is crop rotation only slowly effective against verticillium wilt?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 1
+  expected_entity_ids: [pest_verticillium]
+  expected_output: >-
+    Verticillium dahliae forms microsclerotia that survive in soil for ten years or
+    more without a host, so a two-year break barely dents the population. Rotation
+    starves them of a feeding opportunity and the population declines only through
+    natural mortality, which makes it suppression measured in years rather than a cure.
+  context:
+    - Crop rotation mitigates verticillium wilt - non-host crops starve the soilborne microsclerotia and lower field inoculum over successive seasons.
+    - Verticillium dahliae forms microsclerotia, resting structures that survive in soil for ten years or more without a host.
+    - A two-year break barely dents the population, so rotation is a slow suppression strategy rather than a cure.
+
+- id: sunn_pest_quality_damage
+  input: Why is sunn pest damage during grain filling worse than early-season damage?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 1
+  expected_entity_ids: [pest_sunn_pest]
+  expected_output: >-
+    Sunn pest attacks wheat at grain filling with high severity. Nymphs feeding then
+    inject enzymes that degrade gluten, so the grain looks nearly normal but the
+    dough does not develop. Mills reject consignments above roughly two percent
+    damaged kernels, so a crop with full tonnage can still be downgraded to feed -
+    the loss is to price, not yield.
+  context:
+    - Wheat is susceptible to sunn pest at grain filling with high severity.
+    - Nymphs feeding on developing grain during grain filling inject enzymes that degrade gluten.
+    - Damaged grain looks nearly normal but the dough made from it does not develop properly.
+    - Milling grades reject consignments above a low threshold of damaged kernels, often around two percent, so a full-tonnage crop can be downgraded from bread wheat to feed.
+
+- id: drip_irrigation_cotton_why
+  input: Why is drip irrigation recommended for cotton, beyond saving water?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 1
+  expected_entity_ids: [crop_cotton]
+  expected_output: >-
+    Drip is recommended for cotton with strong evidence. Beyond application
+    efficiency of 85-95 percent, keeping the canopy dry is hostile to foliar fungal
+    pathogens that need leaf wetness, and leaving the inter-row dry suppresses weed
+    germination there. It also makes fertigation practical, which is the realistic
+    way to split nitrogen in a row crop.
+  context:
+    - Drip irrigation is recommended for cotton with strong evidence.
+    - Application efficiency of 85 to 95 percent is routine, against 60 to 75 percent for well-managed furrow irrigation.
+    - A dry canopy is a hostile environment for foliar fungal pathogens that need leaf wetness to germinate.
+    - Leaving the inter-row dry suppresses weed germination there, cutting herbicide requirements in widely spaced row crops such as cotton.
+    - Drip lines can carry soluble fertiliser, which is the most practical way to implement split nitrogen in a row crop.
+
+- id: chickpea_nitrogen_credit
+  input: How does putting chickpea before wheat change the fertiliser plan?
+  expected_route: both
+  acceptable_routes: [both, semantic, graph]
+  hops: 1
+  # The traversal starts from wheat - the fertiliser plan being changed is the
+  # wheat crop's - and rotation_partners returns chickpea as the partner.
+  expected_entity_ids: [crop_wheat]
+  expected_output: >-
+    Chickpea is a recommended rotation partner for wheat: it fixes nitrogen and
+    breaks the cereal foliar disease cycle. Its residue has a low carbon-to-nitrogen
+    ratio and mineralises rapidly, supplying a nitrogen credit that justifies
+    reducing the planned rate for the following crop rather than applying the
+    standard amount and losing the surplus.
+  context:
+    - Wheat rotates with chickpea; the legume fixes nitrogen and breaks the cereal foliar disease cycle.
+    - A preceding legume leaves residue with a low carbon-to-nitrogen ratio that mineralises rapidly.
+    - A chickpea crop ahead of wheat or maize typically justifies reducing the planned nitrogen rate rather than applying the standard amount and accepting the surplus.

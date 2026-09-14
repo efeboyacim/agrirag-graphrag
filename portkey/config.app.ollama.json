@@ -1,0 +1,13 @@
+{
+  "strategy": {
+    "mode": "fallback",
+    "on_status_codes": [429, 500, 502, 503, 529]
+  },
+  "targets": [
+    {
+      "provider": "ollama",
+      "override_params": { "model": "llama3.2:latest" },
+      "retry": { "attempts": 2, "on_status_codes": [500, 502, 503] }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+id,name,category,description
+prac_crop_rotation,Crop rotation,rotation,"Alternating botanically unrelated crops across seasons so that host-specific soilborne pathogens and weeds lose their host between cycles."
+prac_no_till,No-till direct seeding,tillage,"Seeding directly into undisturbed residue-covered soil, conserving stored moisture and reducing wind and water erosion."
+prac_deep_tillage,Deep tillage,tillage,"Subsoiling below the compacted layer to break plough pans and restore downward water movement in heavy soils."
+prac_deficit_irrigation,Deficit irrigation,irrigation,"Deliberately applying less water than full crop demand, concentrating the available supply on the growth stages where yield response is steepest."
+prac_drip_irrigation,Drip irrigation,irrigation,"Delivering water directly to the root zone through emitters, cutting evaporative loss and keeping the canopy dry."
+prac_cover_cropping,Cover cropping,cover_cropping,"Growing a non-harvested crop between cash crops to protect the soil surface, add organic matter and suppress weeds."
+prac_ipm_scouting,IPM scouting and thresholds,ipm,"Systematic field monitoring so that an intervention is triggered only when pest density crosses an economic threshold."
+prac_pheromone_trapping,Pheromone mass trapping,ipm,"Deploying pheromone-baited traps at density high enough to suppress the adult population and delay chemical intervention."
+prac_resistant_cultivars,Resistant cultivar selection,ipm,"Choosing cultivars carrying genetic resistance to the dominant local pathogen races."
+prac_solarization,Soil solarization,ipm,"Covering moist soil with transparent plastic during peak summer so that accumulated heat kills soilborne pathogens and nematode juveniles."
+prac_split_n,Split nitrogen application,nutrient_mgmt,"Dividing the nitrogen dose across several growth stages to match uptake demand and reduce leaching and volatilisation losses."
+prac_gypsum_amendment,Gypsum amendment,nutrient_mgmt,"Applying calcium sulfate to displace exchangeable sodium in sodic soils, restoring aggregate structure and infiltration."

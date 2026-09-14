@@ -1,0 +1,177 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Lint and type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+
+  unit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run pytest tests/unit
+
+  integration:
+    name: Integration tests
+    runs-on: ubuntu-latest
+    services:
+      neo4j:
+        image: neo4j:5.26-community
+        env:
+          NEO4J_AUTH: neo4j/agrirag_dev_pw
+        ports:
+          - 7687:7687
+        options: >-
+          --health-cmd "cypher-shell -u neo4j -p agrirag_dev_pw 'RETURN 1'"
+          --health-interval 10s --health-timeout 10s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+
+      # Validate the CSVs before touching the database - a parse error should
+      # fail with a file and line, not as a confusing Neo4j error.
+      - name: Validate seed data
+        run: uv run agrirag-seed --dry-run
+
+      # The OSS gateway needs no account, so CI runs a real one. Live LLM tests
+      # skip themselves when ANTHROPIC_API_KEY is absent (the usual case on a
+      # fork PR); everything else still runs.
+      - name: Start the Portkey gateway
+        run: |
+          docker run -d --name gateway -p 8787:8787 portkeyai/gateway:latest
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8787/ >/dev/null && break
+            sleep 2
+          done
+
+      - name: Seed the graph
+        run: uv run agrirag-seed --reset
+        env:
+          NEO4J_URI: bolt://localhost:7687
+          NEO4J_PASSWORD: agrirag_dev_pw
+
+      # Embeddings only - no --extract, so CI spends no tokens.
+      - name: Build the vector index
+        run: uv run agrirag-index
+        env:
+          LANCEDB_PATH: ./data/lancedb
+
+      - name: Integration tests
+        run: uv run pytest tests/integration
+        env:
+          NEO4J_URI: bolt://localhost:7687
+          NEO4J_PASSWORD: agrirag_dev_pw
+          LANCEDB_PATH: ./data/lancedb
+          PORTKEY_BASE_URL: http://localhost:8787/v1
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+  # Evaluation. Split by cost:
+  #   * The deterministic metrics (routing, entity linking, abstention) are free,
+  #     instant and exactly reproducible, so they gate every PR.
+  #   * The LLM-graded metrics need a key and spend tokens, so they run on a
+  #     balanced subset for PRs and the full set nightly.
+  # Without a key the whole job still runs and the deterministic half still gates.
+  evaluate:
+    name: Evaluation
+    runs-on: ubuntu-latest
+    needs: [integration]
+    if: github.event_name != 'pull_request' || !github.event.pull_request.head.repo.fork
+    services:
+      neo4j:
+        image: neo4j:5.26-community
+        env:
+          NEO4J_AUTH: neo4j/agrirag_dev_pw
+        ports:
+          - 7687:7687
+        options: >-
+          --health-cmd "cypher-shell -u neo4j -p agrirag_dev_pw 'RETURN 1'"
+          --health-interval 10s --health-timeout 10s --health-retries 20
+    env:
+      NEO4J_URI: bolt://localhost:7687
+      NEO4J_PASSWORD: agrirag_dev_pw
+      LANCEDB_PATH: ./data/lancedb
+      PORTKEY_BASE_URL: http://localhost:8787/v1
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      # A balanced subset on PRs, the whole set on main and nightly. Read by
+      # evals.runner and evals.report, so it bounds the agent sweep *and* the
+      # judge calls - the expensive half. Setting it only on the test selection
+      # (as an earlier version did) left PR cost unchanged.
+      EVAL_SUBSET: ${{ github.event_name == 'pull_request' && '8' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+
+      - name: Start the Portkey gateway
+        run: |
+          docker run -d --name gateway -p 8787:8787 portkeyai/gateway:latest
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8787/ >/dev/null && break
+            sleep 2
+          done
+
+      - run: uv run agrirag-seed --reset
+      - run: uv run agrirag-index
+
+      # The goldens must stay loadable and unique even with no key present.
+      - name: Validate the golden set
+        run: uv run python -c "from evals.dataset import load_goldens, describe; d = describe(load_goldens()); print(d); assert d.total >= 30; assert d.abstain_cases >= 3"
+
+      - name: Run the agent over the goldens
+        if: env.ANTHROPIC_API_KEY != ''
+        run: uv run python -m evals.runner --refresh
+
+      # Scoring must happen before the gate: the judged assertions read this
+      # report rather than re-scoring, so without it they skip - silently, and
+      # the judged thresholds would never be enforced at all.
+      - name: Score every metric and write the report
+        if: env.ANTHROPIC_API_KEY != ''
+        run: uv run python -m evals.report
+
+      # The whole gate in one step. Deterministic metrics assert per case; judged
+      # metrics assert on the aggregate from the report just written. Cheap -
+      # no LLM calls happen here.
+      - name: Enforce thresholds
+        if: env.ANTHROPIC_API_KEY != ''
+        run: uv run pytest evals/
+
+      # Without a key the judged half cannot run, but the golden set still has to
+      # load, stay unique, and keep its shape. That much gates every fork PR.
+      - name: Golden set integrity (no key required)
+        if: env.ANTHROPIC_API_KEY == ''
+        run: uv run pytest evals/ -k "not contextual and not faithfulness and not relevancy and not hallucination and not usefulness"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: evaluation-report
+          path: evals/reports/
+          if-no-files-found: ignore

@@ -1,0 +1,6 @@
+region_id,climate_id
+reg_konya,clim_semi_arid
+reg_cukurova,clim_mediterranean
+reg_ege,clim_mediterranean
+reg_karadeniz,clim_humid_subtropical
+reg_gap,clim_hot_semi_arid

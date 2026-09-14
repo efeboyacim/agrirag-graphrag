@@ -1,0 +1,60 @@
+# Questions the system must decline.
+#
+# These are the most valuable goldens in the set, and the easiest to leave out.
+# Without them, every metric rewards a system that answers everything confidently -
+# there is no case where declining is the correct behaviour, so nothing measures
+# whether the agent knows what it does not know.
+#
+# Two kinds:
+#   off-domain    nothing in the graph or corpus is remotely related
+#   out-of-scope  agricultural, but outside what this knowledge base holds
+
+- id: off_domain_kubernetes
+  input: How do I configure a Kubernetes ingress controller?
+  expected_route: any
+  must_abstain: true
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    I don't have enough information to answer that from the agricultural knowledge base.
+  context: []
+
+- id: off_domain_geography
+  input: What is the capital of France?
+  expected_route: any
+  must_abstain: true
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    I don't have enough information to answer that from the agricultural knowledge base.
+  context: []
+
+- id: off_domain_code
+  input: Write me a Python decorator that retries a function three times.
+  expected_route: any
+  must_abstain: true
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    I don't have enough information to answer that from the agricultural knowledge base.
+  context: []
+
+- id: out_of_scope_livestock
+  input: What vaccination schedule should I use for a dairy herd?
+  expected_route: any
+  must_abstain: true
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    I don't have enough information to answer that from the agricultural knowledge base.
+  context: []
+
+- id: out_of_scope_market_prices
+  input: What will the wheat price be next season?
+  expected_route: any
+  must_abstain: true
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    I don't have enough information to answer that from the agricultural knowledge base.
+  context: []

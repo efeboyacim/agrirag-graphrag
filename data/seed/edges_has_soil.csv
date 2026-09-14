@@ -1,0 +1,10 @@
+region_id,soil_id,prevalence
+reg_konya,soil_calcareous,high
+reg_konya,soil_clay_loam,medium
+reg_cukurova,soil_clay,high
+reg_cukurova,soil_clay_loam,medium
+reg_ege,soil_sandy_loam,high
+reg_ege,soil_calcareous,medium
+reg_karadeniz,soil_acidic_forest,high
+reg_gap,soil_clay_loam,high
+reg_gap,soil_calcareous,medium

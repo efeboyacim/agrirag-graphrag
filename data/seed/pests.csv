@@ -1,0 +1,17 @@
+id,name,scientific_name,category,aliases
+pest_fall_armyworm,Fall armyworm,Spodoptera frugiperda,insect,cizgili misir kurdu|FAW|fall armyworm
+pest_corn_borer,European corn borer,Ostrinia nubilalis,insect,misir kurdu|corn borer
+pest_sunn_pest,Sunn pest,Eurygaster integriceps,insect,sune|sunn pest|cereal bug
+pest_yellow_rust,Yellow rust,Puccinia striiformis,fungal_disease,sari pas|stripe rust|yellow rust
+pest_septoria,Septoria leaf blotch,Zymoseptoria tritici,fungal_disease,septorya|leaf blotch
+pest_cotton_bollworm,Cotton bollworm,Helicoverpa armigera,insect,yesilkurt|bollworm|corn earworm
+pest_whitefly,Cotton whitefly,Bemisia tabaci,insect,beyazsinek|whitefly
+pest_verticillium,Verticillium wilt,Verticillium dahliae,fungal_disease,solgunluk|verticillium wilt
+pest_olive_fruit_fly,Olive fruit fly,Bactrocera oleae,insect,zeytin sinegi|olive fly
+pest_hazelnut_weevil,Hazelnut weevil,Curculio nucum,insect,findik kurdu|nut weevil
+pest_powdery_mildew,Grape powdery mildew,Erysiphe necator,fungal_disease,kulleme|powdery mildew|oidium
+pest_downy_mildew,Grape downy mildew,Plasmopara viticola,fungal_disease,mildiyo|downy mildew
+pest_cercospora,Cercospora leaf spot,Cercospora beticola,fungal_disease,yaprak lekesi|cercospora
+pest_ascochyta,Ascochyta blight,Ascochyta rabiei,fungal_disease,antraknoz|ascochyta blight
+pest_root_knot_nematode,Root-knot nematode,Meloidogyne incognita,nematode,kok ur nematodu|root knot
+pest_wild_oat,Wild oat,Avena fatua,weed,yabani yulaf|wild oat

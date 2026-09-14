@@ -1,0 +1,89 @@
+name: agrirag
+
+services:
+  neo4j:
+    image: neo4j:5.26-community
+    container_name: agrirag-neo4j
+    ports:
+      - "7474:7474"   # HTTP browser
+      - "7687:7687"   # Bolt
+    environment:
+      NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD:-agrirag_dev_pw}"
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      NEO4J_server_memory_heap_max__size: "1G"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - cypher-shell -u neo4j -p "$${NEO4J_PASSWORD:-agrirag_dev_pw}" "RETURN 1" || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+
+  gateway:
+    image: portkeyai/gateway:latest
+    container_name: agrirag-gateway
+    ports:
+      - "8787:8787"
+    environment:
+      PORT: "8787"
+    healthcheck:
+      # The OSS gateway serves its console at / and has no /health route.
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:8787/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  api:
+    build: .
+    container_name: agrirag-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Container-internal overrides win over anything in .env.
+      NEO4J_URI: "bolt://neo4j:7687"
+      PORTKEY_BASE_URL: "http://gateway:8787/v1"
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD:-agrirag_dev_pw}"
+      LANCEDB_PATH: "/data/lancedb"
+      CHECKPOINT_DB: "/data/checkpoints.sqlite"
+      # Without this the ONNX weights land in an ephemeral /tmp and re-download
+      # on every container recreate - the model_cache volume below was mounted
+      # but never actually used.
+      EMBEDDING_CACHE_DIR: "/opt/model-cache"
+    depends_on:
+      neo4j:
+        condition: service_healthy
+      gateway:
+        condition: service_started
+    volumes:
+      # One bind mount for all derived data: the LanceDB index and the agent's
+      # SQLite checkpoints. Bind, not a named volume, because the index is built
+      # on the host by `uv run agrirag-index` - a named volume would leave the
+      # container looking at an empty directory while the host index sat
+      # elsewhere, which reads as "LanceDB is broken".
+      - ./data:/data
+      - model_cache:/opt/model-cache
+      - ./src:/app/src:ro          # hot reload during development
+    command:
+      - uvicorn
+      - agrirag.main:app
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --reload
+      - --reload-dir
+      - /app/src
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  model_cache:

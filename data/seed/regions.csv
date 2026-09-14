@@ -1,0 +1,6 @@
+id,name,country,avg_rainfall_mm,avg_temp_c,aliases
+reg_konya,Konya Basin,Turkey,320,11.5,Konya|Konya Ovasi|Central Anatolia
+reg_cukurova,Cukurova Plain,Turkey,650,19.0,Cukurova|Adana Plain|Seyhan Delta
+reg_ege,Aegean Region,Turkey,700,17.5,Ege|Aegean|Izmir-Manisa
+reg_karadeniz,Eastern Black Sea,Turkey,1200,14.5,Karadeniz|Black Sea Coast|Ordu-Giresun
+reg_gap,Southeastern Anatolia,Turkey,450,18.5,GAP|Sanliurfa Plain|Harran

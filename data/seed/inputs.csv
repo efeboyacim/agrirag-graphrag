@@ -1,0 +1,18 @@
+id,name,input_type,active_ingredient,npk,organic_approved,aliases
+inp_bt,Bacillus thuringiensis,biocontrol,Bacillus thuringiensis subsp. kurstaki,,true,Bt|Btk|bacillus thuringiensis
+inp_spinosad,Spinosad,biocontrol,spinosad,,true,spinosad|GF-120
+inp_neem,Neem extract,biocontrol,azadirachtin,,true,neem|azadirachtin
+inp_trichoderma,Trichoderma biofungicide,biocontrol,Trichoderma harzianum,,true,trichoderma
+inp_deltamethrin,Deltamethrin,pesticide,deltamethrin,,false,deltametrin|decis
+inp_lambda_cyhalothrin,Lambda-cyhalothrin,pesticide,lambda-cyhalothrin,,false,lambda cyhalothrin
+inp_chlorpyrifos,Chlorpyrifos-ethyl,pesticide,chlorpyrifos-ethyl,,false,chlorpyrifos|dursban
+inp_spirotetramat,Spirotetramat,pesticide,spirotetramat,,false,spirotetramat|movento
+inp_tebuconazole,Tebuconazole,fungicide,tebuconazole,,false,tebukonazol|triazole
+inp_azoxystrobin,Azoxystrobin,fungicide,azoxystrobin,,false,azoksistrobin|strobilurin
+inp_copper_hydroxide,Copper hydroxide,fungicide,copper hydroxide,,true,bakir hidroksit|copper
+inp_sulfur,Wettable sulfur,fungicide,elemental sulfur,,true,kukurt|wettable sulphur
+inp_urea,Urea,fertilizer,urea,46-0-0,false,ure|urea 46
+inp_dap,Diammonium phosphate,fertilizer,diammonium phosphate,18-46-0,false,DAP|18-46
+inp_ammonium_sulfate,Ammonium sulfate,fertilizer,ammonium sulfate,21-0-0,false,amonyum sulfat|AS 21
+inp_compost,Farmyard compost,amendment,composted organic matter,1-0.5-1,true,kompost|farmyard manure
+inp_gypsum,Agricultural gypsum,amendment,calcium sulfate dihydrate,,true,jips|gypsum|calcium sulfate

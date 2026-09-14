@@ -1,0 +1,137 @@
+# Definitional and explanatory questions. The answer is prose, not a relationship,
+# so the graph has nothing useful to contribute and the router should say so.
+
+- id: ipm_principles
+  input: Explain the principles behind integrated pest management.
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    IPM is a decision framework rather than a product category. It rests on four
+    pillars: prevention removes the conditions a pest needs, monitoring establishes
+    what is actually present, thresholds convert that into an economic decision, and
+    intervention - when justified - is chosen for selectivity. An intervention must
+    be justified by an observation, so a calendar spray programme is not IPM even
+    when the products are organically approved.
+  context:
+    - Integrated pest management is a decision framework, not a product category, and treats chemical control as one tool among several.
+    - The four pillars are prevention, monitoring, thresholds and selective intervention.
+    - The defining feature is that an intervention must be justified by an observation; a calendar spray programme is by definition not IPM.
+
+- id: economic_threshold
+  input: What is an economic threshold and what changes it?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    The economic injury level is the pest density at which damage equals the cost of
+    prevention; the economic threshold sits slightly below it, because control takes
+    time to work while the population keeps growing. A high crop price or a cheap
+    effective product lowers the threshold; growth stage matters as much as density,
+    since a crop can compensate for early leaf loss but cannot replace lost grain.
+  context:
+    - The economic injury level is the pest density at which the value of the damage equals the cost of preventing it.
+    - The economic threshold is set slightly below that point because a control measure takes time to work while the population keeps growing.
+    - A high crop price lowers the threshold; a cheap effective product does the same.
+    - Growth stage matters as much as density - a crop can compensate for early leaf loss but cannot replace lost grain.
+
+- id: solarization_mechanism
+  input: How does soil solarization work and what are its limits?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    Transparent film over moist, cultivated soil in peak summer raises soil
+    temperature to roughly 45-50 C in the top 10 cm over four to six weeks. The film
+    must be transparent rather than black, and the soil must be wet. It is
+    depth-limited: pathogens below about 30 cm survive and recolonise, so it is
+    suppression rather than eradication.
+  context:
+    - Soil solarization covers moist, cultivated soil with transparent polyethylene film during the hottest part of summer.
+    - Soil temperature reaches typically 45-50 C in the upper 10 centimetres over four to six weeks.
+    - The film must be transparent rather than black, because black film absorbs heat at the surface instead of transmitting it.
+    - The effect is depth-limited; pathogen structures below roughly 30 centimetres survive and recolonise the treated layer over time.
+
+- id: gypsum_vs_leaching
+  input: Why is gypsum used on sodic soils rather than just leaching them?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    Leaching alone makes a sodic soil worse, because removing salts while sodium
+    still dominates the exchange complex accelerates clay dispersion. Gypsum supplies
+    soluble calcium that displaces sodium from the clay surface; the displaced sodium
+    is then leached away. Amend first, leach second.
+  context:
+    - Sodicity is about which cation dominates the exchange sites; when sodium occupies a high proportion, clay particles disperse and the soil loses structure.
+    - Leaching alone makes a sodic soil worse, because removing salts while sodium still dominates the exchange complex accelerates dispersion.
+    - Agricultural gypsum supplies soluble calcium that exchanges for sodium on the clay surface; the displaced sodium is then leached away.
+    - The sequence matters - amend first, leach second.
+
+- id: phi_meaning
+  input: What is a pre-harvest interval and why does it constrain late-season spraying?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    The pre-harvest interval is the minimum number of days between the last
+    application and harvest, set so residues fall below the legal maximum residue
+    level. It is a legal requirement, not a recommendation. A late infestation
+    eliminates every product whose interval is longer than the time remaining, which
+    is why late-season choice often narrows to short-interval biologicals.
+  context:
+    - The pre-harvest interval is the minimum number of days between the last application of a plant protection product and harvest.
+    - It is set so that residues decline below the legal maximum residue level by harvest, and it is a legal requirement rather than a recommendation.
+    - A pest appearing three weeks before harvest eliminates every product whose interval is longer than three weeks.
+    - Spinosad with a three to seven day interval and Bacillus thuringiensis with effectively none remain usable when longer-interval products do not.
+
+- id: fungicide_resistance
+  input: Why does fungicide resistance develop, and which modes of action are most at risk?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    Rare individuals with reduced sensitivity exist before a product is used;
+    repeated application kills the sensitive majority and leaves the rest to
+    reproduce. Strobilurins such as azoxystrobin are high risk because resistance
+    comes from a single point mutation. Triazoles such as tebuconazole are medium
+    risk, eroding gradually. Multi-site protectants such as copper and sulfur have
+    stayed effective for a century.
+  context:
+    - A fungal population contains rare individuals with reduced sensitivity before a product is ever used; repeated application leaves the insensitive minority to reproduce.
+    - Strobilurins inhibit a single respiration site, resistance arises from a single point mutation, and the group is high risk.
+    - Triazoles inhibit sterol biosynthesis and resistance builds gradually through several mutations - medium risk.
+    - Multi-site protectants such as copper hydroxide and elemental sulfur interfere with many cellular targets at once and have retained effectiveness for a century.
+
+- id: bt_limitations
+  input: What are the practical limitations of Bacillus thuringiensis as a control?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    Speed is the main disappointment: Bt-killed larvae stop feeding within hours but
+    take days to die, which reads as failure to someone expecting a pyrethroid's
+    knockdown. Coverage must be thorough because the larva has to eat it, it degrades
+    under UV within days, and efficacy falls sharply as larvae grow.
+  context:
+    - Bt-killed larvae stop feeding within hours but take days to die, which reads as failure to an operator expecting a pyrethroid's knockdown.
+    - Coverage must be thorough because the larva has to eat the material.
+    - It degrades under ultraviolet light within days, so timing against egg hatch matters.
+    - Efficacy falls as larvae grow; applications targeted at early instars work, the same product against large larvae inside a boll or stem does not.
+
+- id: soil_ph_availability
+  input: Why does soil pH matter for nutrient availability on calcareous soils?
+  expected_route: semantic
+  hops: 0
+  expected_entity_ids: []
+  expected_output: >-
+    Above about pH 7.5 phosphorus precipitates as calcium phosphates and
+    micronutrient cations - iron, zinc, manganese, copper - form insoluble hydroxides
+    and carbonates. Iron deficiency chlorosis is the classic symptom on a soil that
+    contains abundant total iron; chelated foliar applications bypass the soil
+    chemistry, whereas adding more iron to the soil does not.
+  context:
+    - Soil pH governs the chemical form of almost every nutrient and therefore whether the plant can take it up.
+    - Above about pH 7.5 phosphorus precipitates as calcium phosphates and becomes progressively unavailable.
+    - Micronutrient cations - iron, zinc, manganese and copper - form insoluble hydroxides and carbonates at high pH.
+    - Chelated foliar applications bypass the soil chemistry entirely and are the practical remedy for iron deficiency chlorosis.

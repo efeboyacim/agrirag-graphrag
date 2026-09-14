@@ -1,0 +1,11 @@
+id,name,scientific_name,category,growing_season,water_need_mm,aliases
+crop_wheat,Wheat,Triticum aestivum,cereal,winter,450,bugday|bread wheat|common wheat
+crop_barley,Barley,Hordeum vulgare,cereal,winter,350,arpa|barley
+crop_maize,Maize,Zea mays,cereal,summer,650,misir|corn|maize
+crop_cotton,Cotton,Gossypium hirsutum,fibre,summer,800,pamuk|upland cotton
+crop_sugarbeet,Sugar beet,Beta vulgaris,root,summer,700,seker pancari|sugarbeet
+crop_sunflower,Sunflower,Helianthus annuus,oilseed,summer,500,aycicegi|sunflower
+crop_hazelnut,Hazelnut,Corylus avellana,tree_nut,perennial,900,findik|filbert|hazelnut
+crop_olive,Olive,Olea europaea,tree_fruit,perennial,450,zeytin|olive
+crop_grape,Grape,Vitis vinifera,vine,perennial,500,uzum|grapevine|table grape
+crop_chickpea,Chickpea,Cicer arietinum,legume,spring,350,nohut|garbanzo|chickpea

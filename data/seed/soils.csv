@@ -1,0 +1,7 @@
+id,name,texture,ph_min,ph_max,drainage,organic_matter_pct,aliases
+soil_clay,Heavy clay,clay,7.2,8.2,poor,1.5,agir killi|vertisol|heavy clay
+soil_clay_loam,Clay loam,clay loam,7.0,8.0,moderate,2.0,killi tin|clay loam
+soil_sandy_loam,Sandy loam,sandy loam,6.5,7.8,good,1.2,kumlu tin|sandy loam
+soil_loam,Loam,loam,6.5,7.5,good,2.5,tin|loam
+soil_calcareous,Calcareous soil,silty clay loam,7.8,8.6,moderate,1.0,kirecli toprak|calcareous|high-lime soil
+soil_acidic_forest,Acidic forest soil,silt loam,4.5,6.0,good,4.0,asidik orman topragi|acid soil

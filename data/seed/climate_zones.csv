@@ -1,0 +1,5 @@
+id,name,description
+clim_semi_arid,Semi-arid continental,"Cold winters and hot dry summers with 250-400 mm annual rainfall; rainfed cereal production depends on stored winter soil moisture."
+clim_hot_semi_arid,Hot semi-arid,"Very hot summers exceeding 40 C with mild winters and 350-500 mm rainfall concentrated in winter; irrigation is required for summer crops."
+clim_mediterranean,Mediterranean,"Mild wet winters and hot dry summers with 600-750 mm rainfall; supports perennial tree crops and irrigated summer field crops."
+clim_humid_subtropical,Humid subtropical,"High year-round rainfall above 1000 mm with mild winters and high humidity; favours perennial nut and tea production and elevates fungal disease pressure."

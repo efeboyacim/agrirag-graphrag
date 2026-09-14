@@ -1,0 +1,92 @@
+[project]
+name = "agrirag"
+version = "0.1.0"
+description = "Agentic Graph RAG platform for the agricultural domain"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "neo4j>=5.26.0",
+    "portkey-ai>=1.9.0",
+    "langchain-core>=0.3.0",
+    "langchain-openai>=0.2.0",
+    "lancedb>=0.15.0",
+    "fastembed>=0.4.0",
+    "langgraph>=0.2.60",
+    "langgraph-checkpoint-sqlite>=2.0.0",
+    "deepeval>=3.0.0",
+    "pyyaml>=6.0",
+]
+
+# Later phases add their own dependencies:
+#   P2  langchain-core, portkey-ai, lancedb, fastembed
+#   P3  langgraph, langgraph-checkpoint-sqlite
+#   P5  deepeval, pyyaml
+
+[project.scripts]
+agrirag-seed = "agrirag.ingestion.seed:main"
+agrirag-index = "agrirag.ingestion.index_builder:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "httpx>=0.27.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agrirag"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "ANN", "RUF"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN"]
+"evals/**" = ["ANN"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+mypy_path = "src"
+packages = ["agrirag"]
+
+[[tool.mypy.overrides]]
+module = ["neo4j.*", "lancedb.*", "fastembed.*", "portkey_ai.*"]
+ignore_missing_imports = true
+
+
+# LangGraph's add_node overloads do not resolve against a `total=False`
+# TypedDict state. Making AgentState total would mean every node returning a
+# partial update becomes a type error, which is the opposite of how LangGraph
+# works. Only this one error code, only this one module - everything else here
+# stays strictly checked.
+[[tool.mypy.overrides]]
+module = ["agrirag.agent.graph"]
+disable_error_code = ["call-overload"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# One event loop for the whole session. langchain_openai pools httpx clients
+# across ChatOpenAI instances, so a per-test loop leaves the second test reusing
+# a connection bound to a loop that has already closed - which surfaces as an
+# opaque "Connection error" on whichever live test happens to run second.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+addopts = "-q"

@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Environment
+.env
+.env.local
+
+# Local data stores (recreated by `make seed` / `make ingest`)
+data/lancedb/
+data/neo4j/
+*.sqlite
+*.sqlite3
+# SQLite writes sidecar files next to the db; these are pure runtime
+# state and the -wal grows into the megabytes.
+*.sqlite-wal
+*.sqlite-shm
+
+# Evaluation artefacts.
+#
+# Committed:   evals/reports/latest.md  - the human-readable summary, so the
+#                                         measured numbers live in version control
+#                                         and a regression shows up in a diff.
+# Not committed: raw per-case scores and cached agent runs. They are large, they
+#                change on every run because the judge is a language model, and
+#                they are regenerable with two commands.
+.deepeval/
+.deepeval-cache.json
+.deepeval_telemetry.txt
+evals/reports/*.json
+evals/runs/
+!evals/reports/.gitkeep
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
