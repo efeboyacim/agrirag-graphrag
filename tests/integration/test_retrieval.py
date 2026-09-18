@@ -198,7 +198,23 @@ async def test_the_index_covers_the_whole_corpus(vectors: LanceDBVectorStore) ->
 
 # --------------------------------------------------------------------------
 # Provenance written by the extraction pass
+#
+# Document, Chunk, MENTIONS and PART_OF are all written by extractor._write,
+# which only runs behind `agrirag-index --extract` - a real LLM call. CI's
+# "Build the vector index" step deliberately omits --extract to spend no
+# tokens, so on CI (and on a laptop that only ran plain `agrirag-index`)
+# there are zero Chunk nodes in Neo4j. Assert that precondition and skip
+# rather than fail, the same way the module-level fixtures skip when a
+# store is unreachable - the alternative is a test that either fails on
+# every CI run by design, or (see the query below) passes vacuously
+# because it iterates a set that happens to be empty.
 # --------------------------------------------------------------------------
+
+
+async def _skip_unless_extraction_has_run(graph: Neo4jGraphStore) -> None:
+    rows = await graph.read("MATCH (c:Chunk) RETURN count(c) AS c")
+    if rows[0]["c"] == 0:
+        pytest.skip("extraction pass has not run - run: uv run agrirag-index --extract")
 
 
 async def test_extraction_did_not_alter_the_deterministic_backbone(
@@ -211,6 +227,7 @@ async def test_extraction_did_not_alter_the_deterministic_backbone(
 
 
 async def test_chunks_link_back_to_graph_entities(graph: Neo4jGraphStore) -> None:
+    await _skip_unless_extraction_has_run(graph)
     rows = await graph.read("MATCH (c:Chunk)-[:MENTIONS]->(e) RETURN count(*) AS c")
     assert rows[0]["c"] > 100
 
@@ -220,6 +237,7 @@ async def test_a_graph_fact_can_be_traced_to_explanatory_prose(
 ) -> None:
     """Provenance is what makes the combined retrieval route worth having: the
     graph says maize is susceptible to fall armyworm, the corpus says why."""
+    await _skip_unless_extraction_has_run(graph)
     rows = await graph.read(
         """
         MATCH (:Crop {id: 'crop_maize'})-[:SUSCEPTIBLE_TO]->(p:Pest {id: 'pest_fall_armyworm'})
@@ -233,6 +251,7 @@ async def test_a_graph_fact_can_be_traced_to_explanatory_prose(
 
 
 async def test_every_chunk_belongs_to_a_document(graph: Neo4jGraphStore) -> None:
+    await _skip_unless_extraction_has_run(graph)
     rows = await graph.read(
         "MATCH (c:Chunk) WHERE NOT (c)-[:PART_OF]->(:Document) RETURN count(c) AS c"
     )
