@@ -60,13 +60,26 @@ class Settings(BaseSettings):
     # "anthropic" is the default and what the measured evaluation baseline was
     # produced with. "ollama" routes to a local model instead - free, offline,
     # and no account - which is what makes the system demonstrable when an API
-    # budget is unavailable. Quality is not comparable; see docs/portkey.md.
-    llm_provider: Literal["anthropic", "ollama"] = "anthropic"
+    # budget is unavailable, at the cost of quality and speed (a 3B model on
+    # CPU). "groq" is a third free option: a hosted, OpenAI-compatible endpoint
+    # serving open-weight models (Llama 3.3 70B by default) on inference
+    # hardware fast enough that it does not need the local-model context
+    # budget or timeout relief ollama does - it behaves like a hosted provider
+    # in every way except that the free tier costs nothing. Quality is not
+    # identical to Anthropic; see docs/portkey.md.
+    llm_provider: Literal["anthropic", "ollama", "groq"] = "anthropic"
 
     # Local provider. The gateway runs in Docker, so it reaches an Ollama on the
     # host through host.docker.internal rather than localhost.
     ollama_host: str = "http://host.docker.internal:11434"
     ollama_model: str = "llama3.2:latest"
+
+    # Free hosted provider. Get a key at console.groq.com/keys - no card
+    # required. The model is a Settings field, not hard-coded, for the same
+    # reason ollama_model is: Groq's free-tier lineup changes over time, and
+    # switching should not require touching Python.
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
 
     #: Character budget for the retrieval context handed to a prompt.
     #:

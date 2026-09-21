@@ -132,6 +132,33 @@ def test_the_credential_is_injected_at_request_time() -> None:
     assert "api_key" not in json.dumps(load_config(Purpose.APP))
 
 
+def test_groq_gets_a_credential_and_its_configured_model() -> None:
+    """Groq is hosted like Anthropic (a credential, no address) but the model
+    still comes from Settings, like ollama - the free tier's lineup is the
+    part most likely to need changing without a code change."""
+    resolved = _resolve_config(
+        _settings(llm_provider="groq", groq_api_key="gsk-test", groq_model="llama-3.1-8b-instant"),
+        Purpose.APP,
+    )
+
+    assert all(t["api_key"] == "gsk-test" for t in resolved["targets"])
+    # The committed fallback chain already names two distinct models; setdefault
+    # must not clobber them with the single configured groq_model.
+    models = [t["override_params"]["model"] for t in resolved["targets"]]
+    assert len(set(models)) == len(models)
+
+
+def test_groq_configs_declare_a_fallback_chain_and_no_credentials() -> None:
+    app = load_config(Purpose.APP, provider="groq")
+    assert app["strategy"]["mode"] == "fallback"
+    assert len(app["targets"]) >= 2
+    assert all(t["provider"] == "groq" for t in app["targets"])
+    assert "api_key" not in json.dumps(app)
+
+    eval_ = load_config(Purpose.EVAL, provider="groq")
+    assert len(eval_["targets"]) == 1, "a degrading judge makes scores incomparable"
+
+
 # --------------------------------------------------------------------------
 # Headers
 # --------------------------------------------------------------------------
@@ -185,6 +212,11 @@ def test_a_missing_provider_key_fails_with_an_actionable_message() -> None:
         build_headers(_settings(anthropic_api_key=""), span=Span.ROUTE, trace_id="t")
 
 
+def test_a_missing_groq_key_fails_with_an_actionable_message() -> None:
+    with pytest.raises(LLMConfigurationError, match="GROQ_API_KEY"):
+        build_headers(_settings(llm_provider="groq"), span=Span.ROUTE, trace_id="t")
+
+
 # --------------------------------------------------------------------------
 # Model construction
 # --------------------------------------------------------------------------
@@ -203,6 +235,19 @@ def test_temperature_is_omitted_by_default() -> None:
     assert chat_model(span=Span.ROUTE, temperature=0.5, settings=_settings()).temperature == 0.5
 
 
+def test_groq_model_selection_and_timeout() -> None:
+    """Groq shares Anthropic's timeout, not Ollama's - it is hosted inference,
+    not a CPU-bound local process."""
+    model = chat_model(
+        span=Span.ROUTE,
+        settings=_settings(
+            llm_provider="groq", groq_api_key="gsk-test", groq_model="llama-3.1-8b-instant"
+        ),
+    )
+    assert model.model_name == "llama-3.1-8b-instant"
+    assert model.request_timeout == 60
+
+
 def test_client_side_retry_is_disabled() -> None:
     """The gateway owns retry policy. Retrying in both places multiplies attempts
     and hides the failure the gateway config is meant to surface."""
@@ -214,3 +259,10 @@ def test_describe_deployment_reports_the_active_mode() -> None:
     assert "hosted control plane" in describe_deployment(
         _settings(portkey_api_key="pk", portkey_config_app="pc")
     )
+
+
+def test_describe_deployment_names_the_groq_model() -> None:
+    described = describe_deployment(
+        _settings(llm_provider="groq", groq_model="llama-3.1-8b-instant")
+    )
+    assert described.endswith("groq/llama-3.1-8b-instant")

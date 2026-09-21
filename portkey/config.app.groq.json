@@ -1,0 +1,19 @@
+{
+  "strategy": {
+    "mode": "fallback",
+    "on_status_codes": [429, 500, 502, 503, 529]
+  },
+  "targets": [
+    {
+      "provider": "groq",
+      "override_params": { "model": "llama-3.3-70b-versatile" },
+      "retry": { "attempts": 3, "on_status_codes": [429, 500, 502, 503, 529] }
+    },
+    {
+      "provider": "groq",
+      "override_params": { "model": "llama-3.1-8b-instant" },
+      "retry": { "attempts": 2, "on_status_codes": [429, 500, 502, 503, 529] }
+    }
+  ],
+  "cache": { "mode": "simple", "max_age": 3600 }
+}

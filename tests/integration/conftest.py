@@ -72,6 +72,27 @@ def _key_is_accepted() -> bool:
             _probe_result = False
         return _probe_result
 
+    if settings.llm_provider == "groq":
+        try:
+            response = httpx.get(
+                "https://api.groq.com/openai/v1/models",
+                headers={"Authorization": f"Bearer {settings.groq_api_key}"},
+                timeout=20,
+            )
+            if response.status_code in (401, 403):
+                _reason = (
+                    f"Groq rejected the key (HTTP {response.status_code}). It has most "
+                    "likely been revoked or mistyped. Update GROQ_API_KEY in .env."
+                )
+                _probe_result = False
+                return _probe_result
+            _probe_result = True
+        except Exception:
+            # Network trouble, not a credential problem - see the anthropic
+            # branch below for the same reasoning.
+            _probe_result = True
+        return _probe_result
+
     try:
         response = httpx.post(
             "https://api.anthropic.com/v1/messages",
@@ -122,6 +143,8 @@ def live_llm() -> None:
 
     if settings.llm_provider == "anthropic" and not settings.anthropic_api_key:
         pytest.skip("ANTHROPIC_API_KEY not set - live LLM tests skipped")
+    if settings.llm_provider == "groq" and not settings.groq_api_key:
+        pytest.skip("GROQ_API_KEY not set - live LLM tests skipped")
 
     if not _key_is_accepted():
         pytest.fail(

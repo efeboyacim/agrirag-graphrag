@@ -99,6 +99,15 @@ def _resolve_config(settings: Settings, purpose: Purpose) -> dict[str, Any]:
             target.setdefault("override_params", {}).setdefault("model", settings.ollama_model)
         return config
 
+    if settings.llm_provider == "groq":
+        # Hosted like Anthropic - a credential, no address - but the model is
+        # still a Settings field rather than hard-coded in the config file,
+        # since the free tier's lineup is the part most likely to change.
+        for target in config.get("targets", []):
+            target.setdefault("api_key", settings.groq_api_key)
+            target.setdefault("override_params", {}).setdefault("model", settings.groq_model)
+        return config
+
     for target in config.get("targets", []):
         target.setdefault("api_key", settings.anthropic_api_key)
     return config
@@ -142,8 +151,15 @@ def build_headers(
     if settings.llm_provider == "anthropic" and not settings.anthropic_api_key:
         raise LLMConfigurationError(
             "ANTHROPIC_API_KEY is not set. Add it to .env - the gateway forwards it "
-            "to the provider and holds no credentials of its own. "
-            "Alternatively set LLM_PROVIDER=ollama to run against a local model."
+            "to the provider and holds no credentials of its own. Alternatively set "
+            "LLM_PROVIDER=ollama for a local model, or LLM_PROVIDER=groq for a free "
+            "hosted one."
+        )
+    if settings.llm_provider == "groq" and not settings.groq_api_key:
+        raise LLMConfigurationError(
+            "GROQ_API_KEY is not set. Get a free key at console.groq.com/keys and add "
+            "it to .env - the gateway forwards it to Groq and holds no credentials of "
+            "its own."
         )
 
     headers = {
@@ -199,9 +215,13 @@ def chat_model(
     if temperature is not None:
         optional["temperature"] = temperature
 
-    model_name = (
-        settings.ollama_model if settings.llm_provider == "ollama" else settings.llm_model_primary
-    )
+    model_name = {
+        "ollama": settings.ollama_model,
+        "groq": settings.groq_model,
+    }.get(settings.llm_provider, settings.llm_model_primary)
+    # Only ollama gets the extended timeout: it is the one provider here that
+    # can be CPU-bound. Groq's inference hardware is fast enough to share
+    # Anthropic's default.
     timeout = settings.llm_timeout_seconds or (300 if settings.llm_provider == "ollama" else 60)
 
     return ChatOpenAI(
@@ -269,9 +289,10 @@ def describe_deployment(settings: Settings | None = None) -> str:
     """One-line summary of how LLM traffic is currently routed, for logs and /health."""
     settings = settings or get_settings()
     mode = "hosted control plane" if settings.portkey_api_key else "self-hosted OSS gateway"
-    target = (
-        f"{settings.llm_provider}/{settings.ollama_model}"
-        if settings.llm_provider == "ollama"
-        else f"anthropic/{settings.llm_model_primary}"
-    )
+    model_by_provider = {
+        "ollama": settings.ollama_model,
+        "groq": settings.groq_model,
+        "anthropic": settings.llm_model_primary,
+    }
+    target = f"{settings.llm_provider}/{model_by_provider[settings.llm_provider]}"
     return f"Portkey {mode} at {settings.portkey_base_url} -> {target}"

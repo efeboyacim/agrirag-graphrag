@@ -150,13 +150,52 @@ the judge. A 3B judge grading a 3B system produces numbers that are not comparab
 to it and not meaningful on their own. Use the local provider to demonstrate that
 the system *works*, not to measure how well.
 
+## A free hosted alternative: Groq
+
+Ollama solves "no API budget" but not "no strong model" - a 3B model on CPU
+is free and offline, but the four provider-aware defaults above exist
+because it is also slow and unreliable under load. `LLM_PROVIDER=groq` is a
+third option: a real hosted, OpenAI-compatible endpoint (so it needs none of
+Ollama's `custom_host` handling) serving open-weight models - Llama 3.3 70B
+by default - on inference hardware fast enough that it takes Anthropic's
+defaults rather than Ollama's. The free tier needs a key, not a card:
+[console.groq.com/keys](https://console.groq.com/keys).
+
+```bash
+echo "LLM_PROVIDER=groq" >> .env
+echo "GROQ_API_KEY=gsk_..." >> .env
+docker compose up -d --build api     # up -d, not restart
+```
+
+Same "provider is a file choice" mechanism as Ollama: `load_config()` picks
+`config.app.groq.json` / `config.eval.groq.json`, and nothing else changes.
+The app config declares a real fallback chain across two Groq models
+(70B versatile to 8B instant) rather than the single-target Ollama config,
+since Groq's free tier makes a second target free to demonstrate too.
+
+This is the more useful free option for the evaluation judge specifically:
+`evals/judge.py` routes through the same provider setting, and a 70B judge
+producing structured verdicts is far more trustworthy than a 3B one - see
+"do not read evaluation numbers from a local-model run" above, which applies
+to Ollama, not to this.
+
+Not yet measured against this project's goldens the way the Ollama numbers
+above are - the honest caveat until a run is on record. Quality should sit
+between llama3.2 3B and Claude, and speed should be close to Anthropic's,
+but neither claim is asserted here without the same kind of measurement the
+Ollama section went through.
+
 ## Configuration
 
-Two configs, committed in [`portkey/`](../portkey):
+Three provider variants of each config, committed in [`portkey/`](../portkey):
 
-- `config.app.json` - router, Cypher generation, extraction, grading, synthesis.
-  Fallback chain, 1-hour cache declared (inactive on the OSS gateway - see above).
-- `config.eval.json` - the DeepEval judge. Single target, 24-hour cache declared.
+- `config.app.json` / `config.app.ollama.json` / `config.app.groq.json` -
+  router, Cypher generation, extraction, grading, synthesis. Fallback chain,
+  1-hour cache declared (inactive on the OSS gateway - see above).
+- `config.eval.json` / `config.eval.ollama.json` / `config.eval.groq.json` -
+  the DeepEval judge. Single target in every variant, including Groq's - the
+  same "a degrading judge makes scores incomparable" reasoning applies
+  regardless of provider. 24-hour cache declared.
 
 Separating them means a nightly eval run does not make the API's own request
 volume and cost unreadable. The eval config deliberately has **no fallback**: a

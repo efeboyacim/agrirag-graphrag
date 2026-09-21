@@ -133,6 +133,20 @@ per-pair rationale, llama3.2 names one. Use this to show the system works, not t
 measure how well - and never read evaluation numbers from a local-model run.
 See [docs/portkey.md](docs/portkey.md).
 
+**A stronger free option: Groq.** A hosted, OpenAI-compatible endpoint serving
+open-weight models (Llama 3.3 70B by default) at no cost - free key, no card,
+at [console.groq.com/keys](https://console.groq.com/keys). Real inference
+hardware rather than a local CPU, so it needs none of Ollama's timeout or
+context-budget relief and is the better free choice for the evaluation judge
+specifically, which needs reliable structured output more than it needs to be
+free-and-offline:
+
+```bash
+echo "LLM_PROVIDER=groq" >> .env
+echo "GROQ_API_KEY=gsk_..." >> .env
+docker compose up -d --build api
+```
+
 ### Changing `.env` after the stack is running
 
 Use `docker compose up -d`, not `restart`:
