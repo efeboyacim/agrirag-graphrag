@@ -163,11 +163,24 @@ jobs:
         if: env.ANTHROPIC_API_KEY != ''
         run: uv run pytest evals/
 
-      # Without a key the judged half cannot run, but the golden set still has to
-      # load, stay unique, and keep its shape. That much gates every fork PR.
-      - name: Golden set integrity (no key required)
+      # Every test in evals/ needs either a live agent run (the `runs` fixture)
+      # or a scored report (the `report` fixture), and both require a working
+      # LLM call - there turns out to be no test here that is actually free of
+      # an API key, "deterministic scoring" notwithstanding. Excluding the
+      # judged-metric tests by name (the previous version of this step) still
+      # left the "deterministic" ones selected, and they depend on `runs` just
+      # as much: without a key, "Run the agent over the goldens" above is
+      # skipped, no cache exists, and every one of them errors on
+      # FileNotFoundError - a wall of failures with nothing to do with the
+      # code under test.
+      #
+      # What a fork PR *can* verify for nothing is that the suite still
+      # imports and collects - parametrization alone (`active_goldens()`,
+      # `scoreable()`) exercises real dataset code - while the golden set's
+      # own shape is already checked above with no pytest involved.
+      - name: Evaluation suite collects cleanly (no key required)
         if: env.ANTHROPIC_API_KEY == ''
-        run: uv run pytest evals/ -k "not contextual and not faithfulness and not relevancy and not hallucination and not usefulness"
+        run: uv run pytest evals/ --collect-only -q
 
       - uses: actions/upload-artifact@v4
         if: always()
