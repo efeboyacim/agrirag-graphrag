@@ -204,10 +204,13 @@ incomparable between runs.
 
 ### Fallback chain
 
-Anthropic is the only provider, so the chain is model-level:
+Each provider's chain is model-level - the gateway never falls back *across*
+providers, since that would silently change answer quality mid-run:
 
 ```
-claude-sonnet-5  ->  claude-haiku-4-5-20251001
+anthropic : claude-sonnet-5          ->  claude-haiku-4-5-20251001
+groq      : llama-3.3-70b-versatile  ->  llama-3.1-8b-instant
+ollama    : llama3.2 (single target)
 ```
 
 Haiku survives the rate limits and overload conditions that throttle the larger

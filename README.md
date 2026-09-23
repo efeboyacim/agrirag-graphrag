@@ -32,6 +32,7 @@ flowchart LR
     API -->|"every LLM call"| GW
     GW --> ANT["Anthropic<br/>sonnet &rarr; haiku fallback"]
     GW --> OLL["Ollama<br/>local, free, no key"]
+    GW --> GRQ["Groq<br/>hosted, free tier"]
 ```
 
 Two boundaries carry most of the design:
@@ -44,8 +45,8 @@ Two boundaries carry most of the design:
   through Portkey" checkable rather than aspirational.
 
 **Measured, not asserted.** 35 hand-authored goldens: routing accuracy **1.00**,
-graph path recall **1.00**, correct abstention **1.00** - all three deterministic
-and gating every CI run - plus faithfulness **1.00** and contextual recall
+graph path recall **1.00**, correct abstention **1.00** - all three scored
+deterministically, with no judge model - plus faithfulness **1.00** and contextual recall
 **0.92**. [Full table, including where it scores badly and why &darr;](#evaluation)
 
 ## Stack
@@ -63,7 +64,8 @@ and gating every CI run - plus faithfulness **1.00** and contextual recall
 
 ```bash
 cp .env.example .env
-# add ANTHROPIC_API_KEY to .env - needed from Phase 2 onward
+# pick one LLM provider in .env: ANTHROPIC_API_KEY, GROQ_API_KEY (free),
+# or LLM_PROVIDER=ollama (local, no key) - see "Running without an API budget"
 docker compose up -d --build
 uv run agrirag-seed --reset        # 75 nodes / 190 relationships
 uv run agrirag-index --extract     # embed the corpus + link it into the graph
@@ -114,7 +116,9 @@ echo "LLM_PROVIDER=ollama" >> .env
 docker compose up -d --build api
 ```
 
-Cost in code: two config files plus provider-aware header assembly.
+Cost in code: two config files plus provider-aware header assembly. No node,
+prompt, template or test changed - which is the concrete version of what the
+gateway is for.
 
 > **Run exactly one Ollama instance.** If `ollama serve` is started by hand while
 > the desktop app is also running, the second loses the port and the model runner
@@ -122,9 +126,7 @@ Cost in code: two config files plus provider-aware header assembly.
 > `ollama error: ... wsarecv: An existing connection was forcibly closed`, which
 > looks like a bug in the agent - the symptom appears on whichever call happens
 > to be in flight, not on the one that caused it. Check with
-> `Get-Process *ollama*` and keep one. No node,
-prompt, template or test changed - which is the concrete version of what the
-gateway is for.
+> `Get-Process *ollama*` and keep one.
 
 Retrieval is *identical* either way, because entity linking, Cypher templates and
 vector search use no model at all. Only synthesis quality drops, and it drops a
@@ -165,7 +167,7 @@ failing authentication with no indication why.
 
 ```bash
 uv sync                          # provisions Python 3.12 and installs deps
-uv run pytest tests/unit         # 132 unit tests, no services needed
+uv run pytest tests/unit         # 201 unit tests, no services needed
 uv run pytest tests/integration  # needs the stack; skips what is unreachable
 uv run ruff check . && uv run mypy
 
@@ -367,7 +369,9 @@ need different fixes. It works because graph rows are linearised into sentences
 before entering the context, so both retrieval paths arrive in the same shape.
 
 **The three bold metrics are deterministic** - no model, no cost, no variance.
-They gate every pull request without an API key, and when a judged score moves
+They gate CI whenever a provider key is configured - the scoring needs no
+model, but the agent run being scored does, since routing is an LLM call - and
+when a judged score moves
 they are how you tell a real regression from judge noise. Two consecutive report
 runs over identical agent outputs moved judged metrics by up to 0.06 while these
 three moved by 0.00, which is why judged thresholds sit ~0.10 below baseline and

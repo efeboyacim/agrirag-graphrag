@@ -8,7 +8,9 @@ Two kinds of test, deliberately different in shape:
 
 * **Deterministic, per case.** Routing and entity linking are computed without a
   model, so they are free, instant and exactly reproducible. Every case must
-  pass. These gate a pull request with no API key and no spend.
+  pass. They still read a cached agent run (the ``runs`` fixture), and
+  producing one needs an LLM for routing - so they gate CI only when a
+  provider key is configured.
 
 * **Judged, aggregate.** Scored by an LLM, so individual cases are noisy - one
   question in thirty will score oddly on any given run. The mean over the set is

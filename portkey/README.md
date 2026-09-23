@@ -9,12 +9,17 @@ API itself impossible to read.
 | `config.app.json` | router, Cypher generation, extraction, grading, synthesis | 1 hour |
 | `config.eval.json` | the DeepEval judge model | 24 hours |
 
+Each has an `.ollama.json` and a `.groq.json` variant; `LLM_PROVIDER` picks
+which file is loaded, and nothing in Python changes.
+
 ## Fallback chain
 
-Anthropic is the only provider, so the chain is model-level:
+The chain is model-level within the selected provider (`LLM_PROVIDER`):
 
 ```
-claude-sonnet-5  ->  claude-haiku-4-5-20251001
+anthropic : claude-sonnet-5          ->  claude-haiku-4-5-20251001
+groq      : llama-3.3-70b-versatile  ->  llama-3.1-8b-instant
+ollama    : llama3.2 (single target)
 ```
 
 Haiku is the fallback because it survives rate limits and overload conditions

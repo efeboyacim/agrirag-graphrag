@@ -89,8 +89,10 @@ Every judged metric is slow, costs money, and moves between runs even when the
 code does not. The three non-judged ones are free, instant and exactly
 reproducible, which buys two things:
 
-1. **They gate every CI run.** A pull request gets a real quality signal without
-   an API key and without spending anything.
+1. **They are cheap to gate on.** Scoring needs no judge model and costs
+   nothing. The agent run being scored still needs an LLM - routing is a model
+   call - so in CI they run whenever a provider key is configured. Without one,
+   CI only checks that the suite collects; see the Evaluation job in ci.yml.
 2. **They disambiguate judge variance from regression.** When faithfulness drops
    three points, the question is always "did something break, or did the judge
    have a different day?" If routing accuracy and entity linking are unchanged,
